@@ -22,7 +22,7 @@ func NewMySQL() *MySQL {
 }
 
 func (m *MySQL) GetAll() []entities.Order {
-	query := "SELECT * FROM `order`"
+	query := "SELECT id, idProduct, quantity FROM `order`"
 	rows, err := m.conn.FetchRows(query)
 	if err != nil {
 		log.Fatalf("Error al obtener órdenes: %v", err)
@@ -46,7 +46,7 @@ func (m *MySQL) GetAll() []entities.Order {
 }
 
 func (m *MySQL) GetByID(id int) (*entities.Order, error) {
-	query := "SELECT * FROM `order` WHERE id = ?"
+	query := "SELECT id, idProduct, quantity FROM `order` WHERE id = ?"
 	log.Printf("Ejecutando consulta: %s con ID: %d", query, id)
 	rows, err := m.conn.FetchRows(query, id)
 	if err != nil {
@@ -70,7 +70,7 @@ func (m *MySQL) GetByID(id int) (*entities.Order, error) {
 }
 
 func (m *MySQL) Create(order entities.Order) error {
-	query := "INSERT INTO `order` (id_product, quantity) VALUES (?, ?)"
+	query := "INSERT INTO `order` (idProduct, quantity) VALUES (?, ?)"
 	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.Quantity)
 	if err != nil {
 		log.Printf("Error al crear la orden: %v", err)
@@ -80,7 +80,7 @@ func (m *MySQL) Create(order entities.Order) error {
 }
 
 func (m *MySQL) Update(order entities.Order) error {
-	query := "UPDATE `order` SET id_product = ?, quantity = ? WHERE id = ?"
+	query := "UPDATE `order` SET idProduct = ?, quantity = ? WHERE id = ?"
 	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.Quantity, order.ID)
 	if err != nil {
 		log.Printf("Error al actualizar la orden: %v", err)
