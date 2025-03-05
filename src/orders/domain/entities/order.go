@@ -3,13 +3,15 @@ package entities
 type Order struct {
 	ID        int
 	IdProduct int
+	IdClient  string
 	Quantity  int
 }
 
-func NewOrder(idProduct int, quantity int) *Order {
+func NewOrder(idProduct int, idClient string, quantity int) *Order {
 	return &Order{
 		ID:        0,
 		IdProduct: idProduct,
+		IdClient:  idClient,
 		Quantity:  quantity,
 	}
 }
@@ -28,6 +30,14 @@ func (o *Order) GetIdProduct() int {
 
 func (o *Order) SetIdProduct(idProduct int) {
 	o.IdProduct = idProduct
+}
+
+func (o *Order) GetIdClient() string {
+	return o.IdClient
+}
+
+func (o *Order) SetIdClient(idClient string) {
+	o.IdClient = idClient
 }
 
 func (o *Order) GetQuantity() int {

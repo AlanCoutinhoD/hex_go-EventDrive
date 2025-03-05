@@ -1,21 +1,34 @@
 package application
 
 import (
+	"demo/src/orders/application/ports"
 	"demo/src/orders/domain/entities"
-	"demo/src/orders/domain/repositories"
+	"log"
 )
 
 type CreateOrder struct {
-	repository repositories.OrderRepository
+	repository    ports.OrderRepository
+	messageBroker ports.MessageBroker
 }
 
-func NewCreateOrder(repository repositories.OrderRepository) *CreateOrder {
+func NewCreateOrder(repository ports.OrderRepository, messageBroker ports.MessageBroker) *CreateOrder {
 	return &CreateOrder{
-		repository: repository,
+		repository:    repository,
+		messageBroker: messageBroker,
 	}
 }
 
-func (co *CreateOrder) Execute(idProduct int, quantity int) error {
-	order := entities.NewOrder(idProduct, quantity)
-	return co.repository.Create(*order)
+func (co *CreateOrder) Execute(idProduct int, idClient string, quantity int) error {
+	order := entities.NewOrder(idProduct, idClient, quantity)
+
+	err := co.repository.Create(*order)
+	if err != nil {
+		return err
+	}
+
+	if err := co.messageBroker.PublishOrder(*order); err != nil {
+		log.Printf("Error publicando orden en RabbitMQ: %v", err)
+	}
+
+	return nil
 }

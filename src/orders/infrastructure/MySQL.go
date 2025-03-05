@@ -22,7 +22,7 @@ func NewMySQL() *MySQL {
 }
 
 func (m *MySQL) GetAll() []entities.Order {
-	query := "SELECT id, idProduct, quantity FROM `order`"
+	query := "SELECT id, idProduct, idClient, quantity FROM `order`"
 	rows, err := m.conn.FetchRows(query)
 	if err != nil {
 		log.Fatalf("Error al obtener órdenes: %v", err)
@@ -32,7 +32,7 @@ func (m *MySQL) GetAll() []entities.Order {
 	var orders []entities.Order
 	for rows.Next() {
 		var order entities.Order
-		if err := rows.Scan(&order.ID, &order.IdProduct, &order.Quantity); err != nil {
+		if err := rows.Scan(&order.ID, &order.IdProduct, &order.IdClient, &order.Quantity); err != nil {
 			log.Printf("Error al escanear la orden: %v", err)
 		}
 		orders = append(orders, order)
@@ -46,7 +46,7 @@ func (m *MySQL) GetAll() []entities.Order {
 }
 
 func (m *MySQL) GetByID(id int) (*entities.Order, error) {
-	query := "SELECT id, idProduct, quantity FROM `order` WHERE id = ?"
+	query := "SELECT id, idProduct, idClient, quantity FROM `order` WHERE id = ?"
 	log.Printf("Ejecutando consulta: %s con ID: %d", query, id)
 	rows, err := m.conn.FetchRows(query, id)
 	if err != nil {
@@ -56,7 +56,7 @@ func (m *MySQL) GetByID(id int) (*entities.Order, error) {
 
 	var order entities.Order
 	if rows.Next() {
-		err = rows.Scan(&order.ID, &order.IdProduct, &order.Quantity)
+		err = rows.Scan(&order.ID, &order.IdProduct, &order.IdClient, &order.Quantity)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				return nil, fmt.Errorf("Orden no encontrada")
@@ -70,8 +70,8 @@ func (m *MySQL) GetByID(id int) (*entities.Order, error) {
 }
 
 func (m *MySQL) Create(order entities.Order) error {
-	query := "INSERT INTO `order` (idProduct, quantity) VALUES (?, ?)"
-	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.Quantity)
+	query := "INSERT INTO `order` (idProduct, idClient, quantity) VALUES (?, ?, ?)"
+	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.IdClient, order.Quantity)
 	if err != nil {
 		log.Printf("Error al crear la orden: %v", err)
 		return err
@@ -80,8 +80,8 @@ func (m *MySQL) Create(order entities.Order) error {
 }
 
 func (m *MySQL) Update(order entities.Order) error {
-	query := "UPDATE `order` SET idProduct = ?, quantity = ? WHERE id = ?"
-	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.Quantity, order.ID)
+	query := "UPDATE `order` SET idProduct = ?, idClient = ?, quantity = ? WHERE id = ?"
+	_, err := m.conn.ExecutePreparedQuery(query, order.IdProduct, order.IdClient, order.Quantity, order.ID)
 	if err != nil {
 		log.Printf("Error al actualizar la orden: %v", err)
 		return err

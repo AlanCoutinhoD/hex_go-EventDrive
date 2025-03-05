@@ -18,6 +18,7 @@ func NewCreateOrderController(useCase *application.CreateOrder) *CreateOrderCont
 func (co_c *CreateOrderController) Execute(c *gin.Context) {
 	var request struct {
 		IdProduct int `json:"idProduct" binding:"required"`
+		IdClient  string `json:"idClient" binding:"required"`
 		Quantity  int `json:"quantity" binding:"required"`
 	}
 
@@ -26,7 +27,7 @@ func (co_c *CreateOrderController) Execute(c *gin.Context) {
 		return
 	}
 
-	err := co_c.useCase.Execute(request.IdProduct, request.Quantity)
+	err := co_c.useCase.Execute(request.IdProduct, request.IdClient, request.Quantity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
