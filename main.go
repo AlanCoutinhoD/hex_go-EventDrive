@@ -5,11 +5,25 @@ import (
 	ordersInfrastructure "demo/src/orders/infrastructure"
 	productsInfrastructure "demo/src/products/infrastructure"
 
+	"fmt"
+	"log"
+	"os"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "localhost"
+	}
+
 	router := gin.Default()
 
 	// Configuración de CORS
@@ -30,5 +44,11 @@ func main() {
 	// Inicializar infraestructura de órdenes
 	ordersInfrastructure.Init(router)
 
-	router.Run(":8080")
+	serverAddr := fmt.Sprintf("%s:%s", host, port)
+	log.Printf("🚀 Servidor corriendo en http://%s", serverAddr)
+	log.Printf("📝 Endpoints disponibles:")
+	log.Printf("   POST http://%s/orders", serverAddr)
+	log.Printf("   GET  http://%s/orders", serverAddr)
+
+	router.Run(serverAddr)
 }
