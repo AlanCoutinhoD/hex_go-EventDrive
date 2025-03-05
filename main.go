@@ -6,16 +6,12 @@ import (
 	productsInfrastructure "demo/src/products/infrastructure"
 
 	"fmt"
-	"io"
-	"log"
-	"net/http"
+	
 	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
-
-var host string
 
 func main() {
 	port := os.Getenv("PORT")
@@ -23,19 +19,9 @@ func main() {
 		port = "8080"
 	}
 
-	// Obtener IP real del servidor
-	resp, err := http.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
-	if err != nil {
-		log.Printf("⚠️ No se pudo obtener la IP pública, usando localhost")
+	host := os.Getenv("HOST")
+	if host == "" {
 		host = "localhost"
-	} else {
-		defer resp.Body.Close()
-		ip, err := io.ReadAll(resp.Body)
-		if err == nil {
-			host = string(ip)
-		} else {
-			host = "localhost"
-		}
 	}
 
 	router := gin.Default()
