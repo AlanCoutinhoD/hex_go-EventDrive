@@ -28,10 +28,14 @@ func main() {
 
 	// Configuración de CORS
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://98.83.96.54:3000"}
-	config.AllowCredentials = true
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.AllowOrigins = []string{
+		"http://98.83.96.54:3000", // frontend
+		"http://localhost:3000",   // Para desarrollo local
+	}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.AllowCredentials = true
+	config.ExposeHeaders = []string{"Content-Length"}
 
 	router.Use(cors.New(config))
 
