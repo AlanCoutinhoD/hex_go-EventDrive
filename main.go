@@ -15,6 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var host string
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -25,12 +27,12 @@ func main() {
 	resp, err := http.Get("http://169.254.169.254/latest/meta-data/public-ipv4")
 	if err != nil {
 		log.Printf("⚠️ No se pudo obtener la IP pública, usando localhost")
-		host := "localhost"
+		host = "localhost"
 	} else {
 		defer resp.Body.Close()
 		ip, err := io.ReadAll(resp.Body)
 		if err == nil {
-			host := string(ip)
+			host = string(ip)
 		} else {
 			host = "localhost"
 		}
